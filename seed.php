@@ -16,6 +16,8 @@ $pdo->exec("TRUNCATE TABLE attributes");
 $pdo->exec("TRUNCATE TABLE currencies");
 $pdo->exec("TRUNCATE TABLE products");
 $pdo->exec("TRUNCATE TABLE categories");
+$pdo->exec("TRUNCATE TABLE order_items");
+$pdo->exec("TRUNCATE TABLE orders");
 
 $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
@@ -30,7 +32,6 @@ foreach ($data['data']['categories'] as $category) {
 
 foreach ($data['data']['products'] as $product) {
 
-    // PRODUCT
     $stmt = $pdo->prepare("
         INSERT INTO products (id, name, in_stock, description, category_id, brand)
         VALUES (?, ?, ?, ?, ?, ?) 
@@ -49,7 +50,6 @@ foreach ($data['data']['products'] as $product) {
         $product['brand']
     ]);
 
-    // 🔥 GALLERY
     foreach ($product['gallery'] as $image) {
         $imgStmt = $pdo->prepare("
             INSERT INTO product_images (product_id, url)
@@ -59,7 +59,6 @@ foreach ($data['data']['products'] as $product) {
         $imgStmt->execute([$product['id'], $image]);
     }
 
-    // 🔥 PRICES
     foreach ($product['prices'] as $price) {
 
         $curStmt = $pdo->prepare("
@@ -89,7 +88,6 @@ foreach ($data['data']['products'] as $product) {
         ]);
     }
 
-    // 🔥 ATTRIBUTES
     foreach ($product['attributes'] as $attribute) {
 
         $attrStmt = $pdo->prepare("
