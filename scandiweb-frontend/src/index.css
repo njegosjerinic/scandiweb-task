@@ -11,8 +11,8 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --heading: system-ui, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
@@ -108,4 +108,102 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+.product-card {
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.out-of-stock {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 5px 10px;
+}
+
+.cart-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: green;
+  color: white;
+  border-radius: 50%;
+  padding: 8px;
+}
+
+.cart-container {
+  font-family: sans-serif;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.cart-left {
+  flex: 1;
+}
+
+.cart-middle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cart-middle button {
+  width: 30px;
+  height: 30px;
+}
+
+.cart-right img {
+  width: 100px;
+  height: auto;
+}
+
+.price {
+  font-weight: bold;
+}
+
+.attr-row {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.attr-box {
+  border: 1px solid #000;
+  padding: 3px 6px;
+  font-size: 12px;
+}
+
+.attr-box.active {
+  background: #000;
+  color: #fff;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+.order-btn {
+  width: 100%;
+  margin-top: 15px;
+  padding: 10px;
+  background: #5ece7b;
+  color: white;
+  border: none;
 }
