@@ -100,13 +100,13 @@ foreach ($data['data']['products'] as $product) {
         ]);
 
         $getAttr = $pdo->prepare("
-            SELECT id FROM attributes WHERE name = ?
+            SELECT id FROM attributes WHERE name = ? AND type = ?
         ");
-        $getAttr->execute([$attribute['name']]);
+        $getAttr->execute([$attribute['name'], $attribute['type']]);
         $attributeId = $getAttr->fetchColumn();
 
         $linkStmt = $pdo->prepare("
-            INSERT INTO product_attributes (product_id, attribute_id)
+            INSERT IGNORE INTO product_attributes (product_id, attribute_id)
             VALUES (?, ?)
         ");
         $linkStmt->execute([
@@ -116,7 +116,7 @@ foreach ($data['data']['products'] as $product) {
 
         foreach ($attribute['items'] as $item) {
             $itemStmt = $pdo->prepare("
-                INSERT INTO attribute_items (attribute_id, display_value, value, item_id)
+                INSERT IGNORE INTO attribute_items (attribute_id, display_value, value, item_id)
                 VALUES (?, ?, ?, ?)
             ");
 
