@@ -1,1 +1,6 @@
 /vendor/
+node_modules/
+scandiweb-frontend/node_modules/
+scandiweb-frontend/.vite/
+scandiweb-frontend/dist/
+.env
