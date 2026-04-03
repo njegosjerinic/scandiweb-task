@@ -18,6 +18,7 @@ $pdo->exec("TRUNCATE TABLE products");
 $pdo->exec("TRUNCATE TABLE categories");
 $pdo->exec("TRUNCATE TABLE order_items");
 $pdo->exec("TRUNCATE TABLE orders");
+$pdo->exec("TRUNCATE TABLE product_attribute_items");
 
 $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
@@ -115,15 +116,28 @@ foreach ($data['data']['products'] as $product) {
         ]);
 
         foreach ($attribute['items'] as $item) {
+
+            // insert item (global)
             $itemStmt = $pdo->prepare("
-                INSERT IGNORE INTO attribute_items (attribute_id, display_value, value, item_id)
-                VALUES (?, ?, ?, ?)
-            ");
+        INSERT IGNORE INTO attribute_items (attribute_id, display_value, value, item_id)
+        VALUES (?, ?, ?, ?)
+    ");
 
             $itemStmt->execute([
                 $attributeId,
                 $item['displayValue'],
                 $item['value'],
+                $item['id']
+            ]);
+
+            // 🔥 KLJUČNO: veza product ↔ item
+            $linkItemStmt = $pdo->prepare("
+        INSERT IGNORE INTO product_attribute_items (product_id, attribute_item_id)
+        VALUES (?, ?)
+    ");
+
+            $linkItemStmt->execute([
+                $product['id'],
                 $item['id']
             ]);
         }
