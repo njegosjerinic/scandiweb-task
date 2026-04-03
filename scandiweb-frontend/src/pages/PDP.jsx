@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import parse from "html-react-parser";
 
 const fetchGraphQL = async (query) => {
   const res = await fetch("http://localhost:8000/graphql", {
@@ -13,9 +14,10 @@ const fetchGraphQL = async (query) => {
   return data.data;
 };
 
-export default function PDP({ id, cart, setCart }) {
+export default function PDP({ id, addToCart }) {
   const [product, setProduct] = useState(null);
   const [selected, setSelected] = useState({});
+  const [imageIndex, setImageIndex] = useState(0);
 
   useEffect(() => {
     fetchGraphQL(`
@@ -23,6 +25,7 @@ export default function PDP({ id, cart, setCart }) {
         product(id: "${id}") {
           id
           name
+          inStock
           gallery
           description
           prices {
@@ -49,77 +52,111 @@ export default function PDP({ id, cart, setCart }) {
     }));
   };
 
-  const addToCart = () => {
-    const existingIndex = cart.findIndex(
-      (item) =>
-        item.id === product.id &&
-        JSON.stringify(item.selected) === JSON.stringify(selected),
+  const nextImage = () => {
+    setImageIndex((prev) =>
+      prev === product.gallery.length - 1 ? 0 : prev + 1,
     );
+  };
 
-    if (existingIndex !== -1) {
-      const updated = [...cart];
-      updated[existingIndex].quantity += 1;
-      setCart(updated);
-    } else {
-      setCart([
-        ...cart,
-        {
-          id: product.id,
-          name: product.name,
-          prices: product.prices,
-          gallery: product.gallery,
-          selected: selected,
-          attributes: product.attributes,
-          quantity: 1,
-        },
-      ]);
-    }
+  const prevImage = () => {
+    setImageIndex((prev) =>
+      prev === 0 ? product.gallery.length - 1 : prev - 1,
+    );
   };
 
   if (!product) return <p>Loading...</p>;
 
   return (
-    <div>
-      <h1>PDP</h1>
-      <h2>{product.name}</h2>
+    <div className="pdp">
+      {/* LEFT */}
+      <div className="pdp__gallery" data-testid="product-gallery">
+        {product.gallery.map((img, i) => (
+          <img
+            key={i}
+            src={img}
+            className="pdp__thumb"
+            onClick={() => setImageIndex(i)}
+          />
+        ))}
+      </div>
 
-      {product.attributes.map((attr) => (
-        <div key={attr.name}>
-          <h4>{attr.name}</h4>
+      <div className="pdp__image">
+        <img src={product.gallery[imageIndex]} alt="" />
 
-          <div data-testid={`product-attribute-${attr.name.toLowerCase()}`}>
-            {attr.items.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => selectAttr(attr.name, item.value)}
-                style={{
-                  margin: "5px",
-                  padding: "10px",
-                  border:
-                    selected[attr.name] === item.value
-                      ? "2px solid green"
-                      : "1px solid gray",
-                }}
-              >
-                {item.displayValue}
-              </button>
-            ))}
+        <button onClick={prevImage} className="arrow left">
+          {"<"}
+        </button>
+        <button onClick={nextImage} className="arrow right">
+          {">"}
+        </button>
+      </div>
+
+      <div className="pdp__info">
+        <h2 className="pdp__title">{product.name}</h2>
+
+        {product.attributes.map((attr) => (
+          <div
+            key={attr.name}
+            className="pdp__attr"
+            data-testid={`product-attribute-${attr.name
+              .toLowerCase()
+              .replace(/\s+/g, "-")}`}
+          >
+            <p className="pdp__attr-name">{attr.name}:</p>
+
+            <div className="pdp__attr-items">
+              {attr.items.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => selectAttr(attr.name, item.value)}
+                  className={`pdp__attr-btn ${
+                    selected[attr.name] === item.value ? "active" : ""
+                  }`}
+                  style={
+                    attr.name.toLowerCase() === "color"
+                      ? {
+                          background: item.value,
+                          width: "32px",
+                          height: "32px",
+                          border:
+                            selected[attr.name] === item.value
+                              ? "2px solid #5ECE7B"
+                              : "1px solid #ccc",
+                        }
+                      : {}
+                  }
+                >
+                  {attr.name.toLowerCase() === "color" ? "" : item.displayValue}
+                </button>
+              ))}
+            </div>
           </div>
+        ))}
+
+        <div className="pdp__price">
+          <p>PRICE:</p>
+          <h3>
+            {product.prices[0].currency.symbol}
+            {product.prices[0].amount.toFixed(2)}
+          </h3>
         </div>
-      ))}
 
-      <p>
-        {product.prices[0].currency.symbol}
-        {product.prices[0].amount.toFixed(2)}
-      </p>
+        <button
+          className="pdp__cart-btn"
+          data-testid="add-to-cart"
+          disabled={
+            !product.inStock ||
+            Object.keys(selected).length !== product.attributes.length
+          }
+          onClick={() => addToCart(product, { ...selected })}
+        >
+          ADD TO CART
+        </button>
 
-      <button
-        data-testid="add-to-cart"
-        disabled={Object.keys(selected).length !== product.attributes.length}
-        onClick={addToCart}
-      >
-        Add to cart
-      </button>
+        <div className="pdp__desc" data-testid="product-description">
+          {parse(product.description)}
+        </div>
+      </div>
     </div>
   );
 }
