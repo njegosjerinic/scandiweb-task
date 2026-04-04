@@ -1,11 +1,43 @@
+import { useEffect, useState } from "react";
+
 export default function Header({
   category,
   setCategory,
   setShowCart,
   setSelectedProductId,
-  cart,
+  cart = [],
 }) {
-  const categories = ["tech", "clothes"];
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/index.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: `
+        {
+          categories {
+            name
+          }
+        }
+      `,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const cats = data?.data?.categories || [];
+
+        setCategories(cats);
+
+        if (cats.length > 0) {
+          setCategory(cats[0].name);
+        }
+
+        console.log("CATEGORY:", category);
+      });
+  }, []);
 
   return (
     <div
@@ -20,21 +52,17 @@ export default function Header({
       <div style={{ display: "flex", gap: "30px" }}>
         {categories.map((cat) => (
           <button
-            key={cat}
+            key={cat.name}
             onClick={() => {
-              setCategory(cat);
+              setCategory(cat.name);
               setSelectedProductId(null);
             }}
             data-testid={
-              category === cat ? "active-category-link" : "category-link"
+              category === cat.name ? "active-category-link" : "category-link"
             }
-            className={`menu-button ${category === cat ? "active" : ""}`}
-            style={{
-              height: "56px",
-              cursor: "pointer",
-            }}
+            className={`menu-button ${category === cat.name ? "active" : ""}`}
           >
-            {cat.toUpperCase()}
+            {cat.name.toUpperCase()}
           </button>
         ))}
       </div>
