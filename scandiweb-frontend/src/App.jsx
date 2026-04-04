@@ -7,7 +7,7 @@ import Header from "./components/Header";
 function App() {
   const [cart, setCart] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState(null);
-  const [category, setCategory] = useState("clothes");
+  const [category, setCategory] = useState("");
   const [showCart, setShowCart] = useState(false);
 
   const getCartKey = (id, selected) => {

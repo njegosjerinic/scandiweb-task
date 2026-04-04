@@ -224,6 +224,8 @@ p {
   font-size: 16px;
   line-height: 120%;
   text-transform: uppercase;
+  height: 56px;
+  cursor: pointer;
 }
 
 .menu-button.active {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import parse from "html-react-parser";
 
 const fetchGraphQL = async (query) => {
-  const res = await fetch("http://localhost:8000/graphql", {
+  const res = await fetch("/api/index.php", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -80,6 +80,7 @@ export default function PDP({ id, addToCart }) {
         ))}
       </div>
 
+      {/* CENTER */}
       <div className="pdp__image">
         <img src={product.gallery[imageIndex]} alt="" />
 
@@ -91,6 +92,7 @@ export default function PDP({ id, addToCart }) {
         </button>
       </div>
 
+      {/* RIGHT */}
       <div className="pdp__info">
         <h2 className="pdp__title">{product.name}</h2>
 
@@ -145,7 +147,7 @@ export default function PDP({ id, addToCart }) {
           className="pdp__cart-btn"
           data-testid="add-to-cart"
           disabled={
-            !product.inStock ||
+            !product.inStock || // 🔥 DODAJ
             Object.keys(selected).length !== product.attributes.length
           }
           onClick={() => addToCart(product, { ...selected })}

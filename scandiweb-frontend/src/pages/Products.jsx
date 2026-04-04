@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const fetchGraphQL = async (query) => {
-  const res = await fetch("http://localhost:8000/graphql", {
+  const res = await fetch("/api/index.php", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -42,7 +42,7 @@ export default function Products({
     }
   }
 }
-  `).then((data) => setProducts(data.products));
+  `).then((data) => setProducts(data?.products || []));
   }, [category]);
 
   const quickAdd = (product) => {
@@ -68,7 +68,7 @@ export default function Products({
                 if (e.target.closest(".cart-icon")) return;
                 setSelectedProductId(p.id);
               }}
-              data-testid={`product-${p.name.toLowerCase().replaceAll(" ", "-")}`}
+              data-testid={`product-${p.name.toLowerCase().replace(/\s+/g, "-")}`}
             >
               <div className="position-relative">
                 <img src={p.gallery[0]} className="card-img-top" />
@@ -83,6 +83,7 @@ export default function Products({
                   <button
                     className="cart-icon"
                     onClick={(e) => {
+                      e.stopPropagation();
                       quickAdd(p);
                     }}
                   >

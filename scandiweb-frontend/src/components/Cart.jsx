@@ -29,22 +29,25 @@ export default function Cart({ cart, setCart }) {
   const currency = cart[0]?.prices[0]?.currency.symbol || "$";
 
   const placeOrder = async () => {
-    await fetch("http://localhost:8000/graphql", {
+    await fetch("/api/index.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         query: `
-          mutation {
-            placeOrder(input: "${JSON.stringify({
-              items: cart,
-              totalAmount: total,
-              currencyLabel: "USD",
-              currencySymbol: "$",
-            }).replace(/"/g, '\\"')}")
-          }
-        `,
+        mutation ($input: String!) {
+          placeOrder(input: $input)
+        }
+      `,
+        variables: {
+          input: JSON.stringify({
+            items: cart,
+            totalAmount: total,
+            currencyLabel: "USD",
+            currencySymbol: "$",
+          }),
+        },
       }),
     });
 
@@ -52,15 +55,17 @@ export default function Cart({ cart, setCart }) {
   };
 
   return (
-    <div className="cart-container">
+    <div className="cart-container" data-testid="cart-overlay">
       <h5>
-        <strong>My Bag,</strong> {cart.length} items
+        <strong>My Bag,</strong>{" "}
+        {cart.length === 1 ? "1 Item" : `${cart.length} Items`}
       </h5>
 
       {cart.map((item, index) => (
         <div
           key={item.id + JSON.stringify(item.selected)}
           className="cart-item"
+          data-testid="cart-item"
         >
           <div className="cart-left">
             <h6>{item.name}</h6>
@@ -134,7 +139,11 @@ export default function Cart({ cart, setCart }) {
         </strong>
       </div>
 
-      <button className="order-btn" onClick={placeOrder}>
+      <button
+        className="order-btn"
+        onClick={placeOrder}
+        disabled={cart.length === 0}
+      >
         PLACE ORDER
       </button>
     </div>
