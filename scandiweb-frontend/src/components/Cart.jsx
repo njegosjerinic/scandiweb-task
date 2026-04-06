@@ -1,4 +1,4 @@
-export default function Cart({ cart, setCart }) {
+function Cart({ cart, setCart }) {
   const increase = (index) => {
     setCart((prev) => {
       const updated = [...prev];
@@ -57,8 +57,10 @@ export default function Cart({ cart, setCart }) {
   return (
     <div className="cart-container" data-testid="cart-overlay">
       <h5>
-        <strong>My Bag,</strong>{" "}
-        {cart.length === 1 ? "1 Item" : `${cart.length} Items`}
+        <strong>My Bag,</strong>
+        {cart.length === 1
+          ? "1 Item"
+          : `${cart.reduce((sum, item) => sum + item.quantity, 0)} Items`}
       </h5>
 
       {cart.map((item, index) => (
@@ -143,9 +145,12 @@ export default function Cart({ cart, setCart }) {
         className="order-btn"
         onClick={placeOrder}
         disabled={cart.length === 0}
+        style={{ display: "fixed" }}
       >
         PLACE ORDER
       </button>
     </div>
   );
 }
+
+export default Cart;

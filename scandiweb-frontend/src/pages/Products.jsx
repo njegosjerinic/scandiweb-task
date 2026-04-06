@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 const fetchGraphQL = async (query) => {
   const res = await fetch("/api/index.php", {
@@ -13,37 +14,37 @@ const fetchGraphQL = async (query) => {
   return data.data;
 };
 
-export default function Products({
-  setSelectedProductId,
-  category,
-  addToCart,
-}) {
+function Products({ addToCart }) {
+  const { category } = useParams();
+  const currentCategory = category || "all";
+  const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
     fetchGraphQL(`
     {
-      products(category: "${category}") {
-      id
-      name
-      gallery
-      inStock
-      prices {
-        amount
-        currency { symbol }
-      }
-      attributes {
-      name
-      items {
+      products(category: "${currentCategory}") {
         id
-        value
-        displayValue
+        name
+        gallery
+        inStock
+        prices {
+          amount
+          currency { symbol }
+        }
+        attributes {
+          name
+          items {
+            id
+            value
+            displayValue
+          }
+        }
       }
     }
-  }
-}
-  `).then((data) => setProducts(data?.products || []));
-  }, [category]);
+    `).then((data) => setProducts(data?.products || []));
+  }, [currentCategory]);
 
   const quickAdd = (product) => {
     const defaultSelected = {};
@@ -56,8 +57,8 @@ export default function Products({
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="title text-capitalize">{category}</h2>
+    <div className="container mt-5" style={{ paddingTop: "50px" }}>
+      <h2 className="title text-capitalize">{currentCategory}</h2>
 
       <div className="row g-4">
         {products.map((p) => (
@@ -66,7 +67,7 @@ export default function Products({
               className="card h-100 product-card"
               onClick={(e) => {
                 if (e.target.closest(".cart-icon")) return;
-                setSelectedProductId(p.id);
+                navigate(`/product/${p.id}`);
               }}
               data-testid={`product-${p.name.toLowerCase().replace(/\s+/g, "-")}`}
             >
@@ -124,3 +125,5 @@ export default function Products({
     </div>
   );
 }
+
+export default Products;

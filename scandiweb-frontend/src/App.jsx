@@ -1,13 +1,13 @@
 import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Products from "./pages/Products";
-import PDP from "./pages/PDP";
 import Cart from "./components/Cart";
 import Header from "./components/Header";
+import Product from "./pages/Product";
 
 function App() {
   const [cart, setCart] = useState([]);
-  const [selectedProductId, setSelectedProductId] = useState(null);
-  const [category, setCategory] = useState("");
   const [showCart, setShowCart] = useState(false);
 
   const getCartKey = (id, selected) => {
@@ -48,59 +48,38 @@ function App() {
         },
       ];
     });
-
-    setShowCart(true);
   };
 
   return (
-    <div>
+    <BrowserRouter>
       {showCart && (
         <>
-          <div
-            onClick={() => setShowCart(false)}
-            style={{
-              position: "fixed",
-              top: "68px",
-              left: 0,
-              width: "100%",
-              height: "calc(100% - 68px)",
-              background: "rgba(0,0,0,0.5)",
-              zIndex: 999,
-            }}
-          />
-
-          <div
-            style={{
-              position: "fixed",
-              top: "68px",
-              right: "300px",
-              width: "350px",
-              background: "white",
-              padding: "20px",
-              zIndex: 1000,
-            }}
-          >
-            <Cart cart={cart} setCart={setCart} />
+          <div onClick={() => setShowCart(false)} className="cart-overlay">
+            <div className="cart">
+              <Cart cart={cart} setCart={setCart} />
+            </div>
           </div>
         </>
       )}
-      <Header
-        category={category}
-        setCategory={setCategory}
-        setShowCart={setShowCart}
-        setSelectedProductId={setSelectedProductId}
-        cart={cart}
-      />
-      {selectedProductId ? (
-        <PDP id={selectedProductId} addToCart={addToCartGlobal} />
-      ) : (
-        <Products
-          setSelectedProductId={setSelectedProductId}
-          category={category}
-          addToCart={addToCartGlobal}
+
+      <Header setShowCart={setShowCart} cart={cart} />
+
+      <Routes>
+        {/* default */}
+        <Route path="/" element={<Products addToCart={addToCartGlobal} />} />
+
+        {/* category */}
+        <Route
+          path="/:category"
+          element={<Products addToCart={addToCartGlobal} />}
         />
-      )}
-    </div>
+
+        <Route
+          path="/product/:id"
+          element={<Product addToCart={addToCartGlobal} />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
-export default function Header({
-  category,
-  setCategory,
-  setShowCart,
-  setSelectedProductId,
-  cart = [],
-}) {
-  const [categories, setCategories] = useState([]);
+function Header({ setShowCart, cart = [] }) {
+  const DEFAULT_CATEGORIES = [
+    { name: "all" },
+    { name: "clothes" },
+    { name: "tech" },
+  ];
+
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+
+  const location = useLocation();
+  const currentCategory = location.pathname.replace("/", "") || "all";
 
   useEffect(() => {
     fetch("/api/index.php", {
@@ -29,41 +33,29 @@ export default function Header({
       .then((data) => {
         const cats = data?.data?.categories || [];
 
-        setCategories(cats);
-
         if (cats.length > 0) {
-          setCategory(cats[0].name);
+          setCategories(cats);
         }
-
-        console.log("CATEGORY:", category);
-      });
+      })
+      .catch(() => {});
   }, []);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        height: "80px",
-        padding: "0 80px",
-      }}
-    >
+    <div className="header container">
       <div style={{ display: "flex", gap: "30px" }}>
         {categories.map((cat) => (
-          <button
+          <Link
             key={cat.name}
-            onClick={() => {
-              setCategory(cat.name);
-              setSelectedProductId(null);
-            }}
+            to={`/${cat.name}`}
             data-testid={
-              category === cat.name ? "active-category-link" : "category-link"
+              currentCategory === cat.name
+                ? "active-category-link"
+                : "category-link"
             }
-            className={`menu-button ${category === cat.name ? "active" : ""}`}
+            className={`menu-button ${currentCategory === cat.name ? "active" : ""}`}
           >
             {cat.name.toUpperCase()}
-          </button>
+          </Link>
         ))}
       </div>
 
@@ -112,7 +104,7 @@ export default function Header({
         onClick={() => setShowCart((prev) => !prev)}
         style={{ cursor: "pointer", position: "relative" }}
       >
-        {cart.length > 0 && (
+        {cart.reduce((sum, item) => sum + item.quantity, 0) > 0 && (
           <div
             style={{
               position: "absolute",
@@ -129,7 +121,7 @@ export default function Header({
               justifyContent: "center",
             }}
           >
-            {cart.length}
+            {cart.reduce((sum, item) => sum + item.quantity, 0)}
           </div>
         )}
         <svg
@@ -156,3 +148,5 @@ export default function Header({
     </div>
   );
 }
+
+export default Header;
