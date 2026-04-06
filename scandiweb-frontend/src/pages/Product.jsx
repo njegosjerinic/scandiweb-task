@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import parse from "html-react-parser";
+import { useParams } from "react-router-dom";
 
 const fetchGraphQL = async (query) => {
   const res = await fetch("/api/index.php", {
@@ -14,10 +15,11 @@ const fetchGraphQL = async (query) => {
   return data.data;
 };
 
-export default function PDP({ id, addToCart }) {
+function Product({ addToCart }) {
   const [product, setProduct] = useState(null);
   const [selected, setSelected] = useState({});
   const [imageIndex, setImageIndex] = useState(0);
+  const { id } = useParams();
 
   useEffect(() => {
     fetchGraphQL(`
@@ -34,6 +36,7 @@ export default function PDP({ id, addToCart }) {
           }
           attributes {
             name
+            type
             items {
               id
               value
@@ -104,7 +107,7 @@ export default function PDP({ id, addToCart }) {
               .toLowerCase()
               .replace(/\s+/g, "-")}`}
           >
-            <p className="pdp__attr-name">{attr.name}:</p>
+            <p className="pdp__attr-name">{attr.name.toUpperCase()}:</p>
 
             <div className="pdp__attr-items">
               {attr.items.map((item) => (
@@ -114,16 +117,18 @@ export default function PDP({ id, addToCart }) {
                   className={`pdp__attr-btn ${
                     selected[attr.name] === item.value ? "active" : ""
                   }`}
+                  data-testid={`product-attribute-${attr.name.toLowerCase()}-${
+                    attr.type === "swatch" ? item.value : item.displayValue
+                  }`}
                   style={
                     attr.name.toLowerCase() === "color"
                       ? {
                           background: item.value,
-                          width: "32px",
-                          height: "32px",
                           border:
                             selected[attr.name] === item.value
                               ? "2px solid #5ECE7B"
                               : "1px solid #ccc",
+                          minWidth: "32px",
                         }
                       : {}
                   }
@@ -147,7 +152,7 @@ export default function PDP({ id, addToCart }) {
           className="pdp__cart-btn"
           data-testid="add-to-cart"
           disabled={
-            !product.inStock || // 🔥 DODAJ
+            !product.inStock ||
             Object.keys(selected).length !== product.attributes.length
           }
           onClick={() => addToCart(product, { ...selected })}
@@ -162,3 +167,5 @@ export default function PDP({ id, addToCart }) {
     </div>
   );
 }
+
+export default Product;
