@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
+import Cart from "./Cart";
 
-function Header({ setShowCart, cart = [] }) {
+function Header({ cart, setCart, showCart, setShowCart }) {
   const DEFAULT_CATEGORIES = [
     { name: "all" },
     { name: "clothes" },
@@ -11,7 +12,8 @@ function Header({ setShowCart, cart = [] }) {
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
 
   const location = useLocation();
-  const currentCategory = location.pathname.replace("/", "") || "all";
+  const currentCategory = location.pathname.split("/")[1] || "all";
+  const cartRef = useRef(null);
 
   useEffect(() => {
     fetch("/api/index.php", {
@@ -40,6 +42,22 @@ function Header({ setShowCart, cart = [] }) {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!showCart) return;
+
+      if (cartRef.current && !cartRef.current.contains(e.target)) {
+        setShowCart(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCart]);
+
   return (
     <div className="header container">
       <div style={{ display: "flex", gap: "30px" }}>
@@ -59,7 +77,7 @@ function Header({ setShowCart, cart = [] }) {
         ))}
       </div>
 
-      <div className="logo">
+      <Link to="/" className="logo">
         <svg
           width="32"
           height="30"
@@ -97,7 +115,7 @@ function Header({ setShowCart, cart = [] }) {
             </linearGradient>
           </defs>
         </svg>
-      </div>
+      </Link>
 
       <div
         data-testid="cart-btn"
@@ -144,6 +162,15 @@ function Header({ setShowCart, cart = [] }) {
             fill="#43464E"
           />
         </svg>
+        {showCart && (
+          <>
+            <div className="cart-overlay"></div>
+
+            <div className="cart" ref={cartRef}>
+              <Cart cart={cart} setCart={setCart} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

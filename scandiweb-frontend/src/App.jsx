@@ -2,7 +2,6 @@ import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Products from "./pages/Products";
-import Cart from "./components/Cart";
 import Header from "./components/Header";
 import Product from "./pages/Product";
 
@@ -52,30 +51,23 @@ function App() {
 
   return (
     <BrowserRouter>
-      {showCart && (
-        <>
-          <div onClick={() => setShowCart(false)} className="cart-overlay">
-            <div className="cart">
-              <Cart cart={cart} setCart={setCart} />
-            </div>
-          </div>
-        </>
-      )}
-
-      <Header setShowCart={setShowCart} cart={cart} />
+      <Header
+        cart={cart}
+        setCart={setCart}
+        showCart={showCart}
+        setShowCart={setShowCart}
+      />
 
       <Routes>
-        {/* default */}
         <Route path="/" element={<Products addToCart={addToCartGlobal} />} />
 
-        {/* category */}
         <Route
           path="/:category"
           element={<Products addToCart={addToCartGlobal} />}
         />
 
         <Route
-          path="/product/:id"
+          path="/:category/:id"
           element={<Product addToCart={addToCartGlobal} />}
         />
       </Routes>

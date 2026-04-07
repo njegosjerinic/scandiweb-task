@@ -19,7 +19,7 @@ function Product({ addToCart }) {
   const [product, setProduct] = useState(null);
   const [selected, setSelected] = useState({});
   const [imageIndex, setImageIndex] = useState(0);
-  const { id } = useParams();
+  const { category, id } = useParams();
 
   useEffect(() => {
     fetchGraphQL(`
@@ -70,8 +70,7 @@ function Product({ addToCart }) {
   if (!product) return <p>Loading...</p>;
 
   return (
-    <div className="pdp">
-      {/* LEFT */}
+    <div className="pdp container">
       <div className="pdp__gallery" data-testid="product-gallery">
         {product.gallery.map((img, i) => (
           <img
@@ -83,7 +82,6 @@ function Product({ addToCart }) {
         ))}
       </div>
 
-      {/* CENTER */}
       <div className="pdp__image">
         <img src={product.gallery[imageIndex]} alt="" />
 
@@ -95,7 +93,6 @@ function Product({ addToCart }) {
         </button>
       </div>
 
-      {/* RIGHT */}
       <div className="pdp__info">
         <h2 className="pdp__title">{product.name}</h2>
 
