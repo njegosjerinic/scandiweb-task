@@ -49,11 +49,24 @@ class GraphQL
                             $attributeRepo = new AttributeRepository($pdo);
                             $repo = new ProductRepository($pdo, $attributeRepo);
 
-                            if (isset($args['category'])) {
+                            if (isset($args['category']) && $args['category'] !== 'all') {
                                 return array_map(fn($p) => $p->toArray(), $repo->getByCategory($args['category']));
                             }
 
                             return array_map(fn($p) => $p->toArray(), $repo->getAll());
+                        },
+                    ],
+
+                    'categories' => [
+                        'type' => Type::listOf(new ObjectType([
+                            'name' => 'Category',
+                            'fields' => [
+                                'name' => Type::string(),
+                            ],
+                        ])),
+                        'resolve' => function () use ($pdo) {
+                            $stmt = $pdo->query("SELECT name FROM categories");
+                            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
                         },
                     ],
 

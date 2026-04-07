@@ -22,6 +22,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -76,9 +80,6 @@ h2 {
   @media (max-width: 1024px) {
     font-size: 20px;
   }
-}
-p {
-  margin: 0;
 }
 
 .logo {
@@ -154,9 +155,9 @@ p {
 }
 
 .cart {
-  position: fixed;
-  top: 80px;
-  right: 300px;
+  position: absolute;
+  top: 30px;
+  right: 0px;
   width: 350px;
   max-height: calc(100vh - 80px);
   background: white;
@@ -291,7 +292,7 @@ p {
   display: grid;
   grid-template-columns: 100px 1fr 400px;
   gap: 40px;
-  padding: 80px 100px;
+  padding: 160px 100px;
   align-items: start;
 }
 
@@ -313,7 +314,6 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 500px;
 }
 
 .pdp__image img {

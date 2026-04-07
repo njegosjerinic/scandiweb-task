@@ -56,7 +56,6 @@ class AttributeRepository
         $items = [];
 
         foreach ($rows as $row) {
-            // 🔥 ključ: dedupe po item_id
             $items[$row['item_id']] = [
                 'displayValue' => $row['display_value'],
                 'value' => $row['value'],
