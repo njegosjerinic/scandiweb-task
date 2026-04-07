@@ -122,7 +122,7 @@ Upload contents of `dist/` to server.
 
 The application is deployed and accessible at:
 
-👉 [[LIVE URL HERE](https://www.itfsrpska.com/)]
+👉 [[itfsrpska.com](https://www.itfsrpska.com/)]
 
 Backend GraphQL endpoint:
 
