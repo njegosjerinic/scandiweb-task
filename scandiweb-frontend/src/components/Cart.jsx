@@ -55,7 +55,7 @@ function Cart({ cart, setCart }) {
   };
 
   return (
-    <div className="cart-container" data-testid="cart-overlay">
+    <div className="cart-container">
       <h5>
         <strong>My Bag,</strong>
         {cart.length === 1
