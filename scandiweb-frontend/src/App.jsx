@@ -8,6 +8,7 @@ import Product from "./pages/Product";
 function App() {
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
+  const [category, setCategory] = useState("all");
 
   const getCartKey = (id, selected) => {
     return (
@@ -53,11 +54,21 @@ function App() {
 
   return (
     <BrowserRouter>
+      {showCart && (
+        <div
+          onClick={() => setShowCart(false)}
+          className="cart-overlay"
+          data-testid="cart-overlay"
+        ></div>
+      )}
+
       <Header
         cart={cart}
         setCart={setCart}
         showCart={showCart}
         setShowCart={setShowCart}
+        category={category}
+        setCategory={setCategory}
       />
 
       <Routes>
@@ -69,7 +80,7 @@ function App() {
         />
 
         <Route
-          path="/:category/:id"
+          path="/product/:id"
           element={<Product addToCart={addToCartGlobal} />}
         />
       </Routes>

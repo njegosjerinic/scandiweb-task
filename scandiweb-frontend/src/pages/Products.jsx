@@ -67,7 +67,7 @@ function Products({ addToCart }) {
               className="card h-100 product-card"
               onClick={(e) => {
                 if (e.target.closest(".cart-icon")) return;
-                navigate(`/${currentCategory}/${p.id}`);
+                navigate(`/product/${p.id}`);
               }}
               data-testid={`product-${p.name.toLowerCase().replace(/\s+/g, "-")}`}
             >

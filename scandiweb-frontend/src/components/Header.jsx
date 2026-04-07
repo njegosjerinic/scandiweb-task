@@ -1,8 +1,15 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Cart from "./Cart";
 
-function Header({ cart, setCart, showCart, setShowCart }) {
+function Header({
+  cart,
+  setCart,
+  showCart,
+  setShowCart,
+  category,
+  setCategory,
+}) {
   const DEFAULT_CATEGORIES = [
     { name: "all" },
     { name: "clothes" },
@@ -12,8 +19,10 @@ function Header({ cart, setCart, showCart, setShowCart }) {
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
 
   const location = useLocation();
-  const currentCategory = location.pathname.split("/")[1] || "all";
-  const cartRef = useRef(null);
+
+  const path = location.pathname.split("/")[1];
+
+  const currentCategory = path === "product" || path === "" ? category : path;
 
   useEffect(() => {
     fetch("/api/index.php", {
@@ -42,27 +51,12 @@ function Header({ cart, setCart, showCart, setShowCart }) {
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (!showCart) return;
-
-      if (cartRef.current && !cartRef.current.contains(e.target)) {
-        setShowCart(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showCart]);
-
   return (
     <div className="header container">
       <div style={{ display: "flex", gap: "30px" }}>
         {categories.map((cat) => (
           <Link
+            onClick={() => setCategory(cat.name)}
             key={cat.name}
             to={`/${cat.name}`}
             data-testid={
@@ -119,7 +113,10 @@ function Header({ cart, setCart, showCart, setShowCart }) {
 
       <div
         data-testid="cart-btn"
-        onClick={() => setShowCart((prev) => !prev)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowCart((prev) => !prev);
+        }}
         style={{ cursor: "pointer", position: "relative" }}
       >
         {cart.reduce((sum, item) => sum + item.quantity, 0) > 0 && (
@@ -164,9 +161,7 @@ function Header({ cart, setCart, showCart, setShowCart }) {
         </svg>
         {showCart && (
           <>
-            <div className="cart-overlay"></div>
-
-            <div className="cart" ref={cartRef}>
+            <div className="cart" onClick={() => setShowCart(false)}>
               <Cart cart={cart} setCart={setCart} />
             </div>
           </>

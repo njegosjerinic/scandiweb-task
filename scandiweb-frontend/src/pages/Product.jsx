@@ -19,7 +19,7 @@ function Product({ addToCart }) {
   const [product, setProduct] = useState(null);
   const [selected, setSelected] = useState({});
   const [imageIndex, setImageIndex] = useState(0);
-  const { category, id } = useParams();
+  const { id } = useParams();
 
   useEffect(() => {
     fetchGraphQL(`
