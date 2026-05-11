@@ -7,6 +7,7 @@ use App\Repository\AttributeRepository;
 use App\Repository\OrderRepository;
 use App\GraphQL\Types\ProductType;
 use GraphQL\GraphQL as GraphQLBase;
+use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Schema;
@@ -34,6 +35,14 @@ class GraphQL
             $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
             $productType = new ProductType();
+
+            $orderItemInput = new InputObjectType([
+                'name' => 'OrderItemInput',
+                'fields' => [
+                    'productId' => Type::nonNull(Type::string()),
+                    'quantity' => Type::nonNull(Type::int()),
+                ]
+            ]);
 
             $queryType = new ObjectType([
                 'name' => 'Query',
@@ -97,15 +106,14 @@ class GraphQL
             $mutationType = new ObjectType([
                 'name' => 'Mutation',
                 'fields' => [
-
                     'placeOrder' => [
                         'type' => Type::string(),
                         'args' => [
-                            'input' => Type::string()
+                            'items' => Type::nonNull(Type::listOf(Type::nonNull($orderItemInput)))
                         ],
                         'resolve' => function ($root, $args) use ($pdo) {
 
-                            $input = json_decode($args['input'], true);
+                            $input = $args['items'];
 
                             $repo = new OrderRepository($pdo);
 

@@ -3,7 +3,12 @@ import parse from "html-react-parser";
 import { useParams } from "react-router-dom";
 
 const fetchGraphQL = async (query) => {
-  const res = await fetch("/api/index.php", {
+  const API_URL =
+    window.location.hostname === "localhost"
+      ? "http://localhost:8000/graphql"
+      : "/api/index.php";
+
+  const res = await fetch(API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

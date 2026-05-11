@@ -25,7 +25,12 @@ function Header({
   const currentCategory = path === "product" || path === "" ? category : path;
 
   useEffect(() => {
-    fetch("/api/index.php", {
+    const API_URL =
+      window.location.hostname === "localhost"
+        ? "http://localhost:8000/graphql"
+        : "/api/index.php";
+
+    fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

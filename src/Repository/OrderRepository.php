@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repository;
+use PDO;
 
 class OrderRepository
 {
@@ -18,19 +19,40 @@ class OrderRepository
             $this->pdo->beginTransaction();
 
             $stmt = $this->pdo->prepare("
-            INSERT INTO orders (total_amount, currency_label, currency_symbol)
-            VALUES (?, ?, ?)
-        ");
+                SELECT p.amount, p.currency_id, c.label, c.symbol
+                FROM prices p
+                JOIN currencies c
+                 ON p.currency_id = c.id
+                WHERE product_id = ?
+            ");
+
+            $total = 0;
+
+            foreach ($input as $item) {
+
+                $stmt->execute([$item['productId']]);
+
+                $product = $stmt->fetch();
+
+                $total += $product['amount'] * $item['quantity'];
+
+
+            }
+
+            $stmt = $this->pdo->prepare("
+                INSERT INTO orders (total_amount, currency_label, currency_symbol)
+                VALUES (?, ?, ?)
+            ");
 
             $stmt->execute([
-                $input['totalAmount'],
-                $input['currencyLabel'],
-                $input['currencySymbol']
+                $total,
+                $product['label'],
+                $product['symbol']
             ]);
 
             $orderId = $this->pdo->lastInsertId();
 
-            foreach ($input['items'] as $item) {
+            foreach ($input as $item) {
 
                 $stmt = $this->pdo->prepare("
                 INSERT INTO order_items 
@@ -43,8 +65,8 @@ class OrderRepository
                     $item['productId'],
                     $item['name'],
                     $item['quantity'],
-                    $item['price'],
-                    json_encode($item['attributes'])
+                    $item['amount'],
+                    $item['attributes'],
                 ]);
             }
 
@@ -54,7 +76,12 @@ class OrderRepository
 
         } catch (\Exception $e) {
             $this->pdo->rollBack();
-            die($e->getMessage()); // 🔥 ovo će ti reći tačno šta puca
+
+            echo '<pre>';
+            print_r($e->getMessage());
+            echo '</pre>';
+
+            die();
         }
     }
 }

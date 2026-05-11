@@ -17,11 +17,11 @@ class AttributeRepository
     public function getByProductId(string $productId): array
     {
         $stmt = $this->pdo->prepare("
-        SELECT a.id, a.name, a.type
-        FROM attributes a
-        JOIN product_attributes pa ON a.id = pa.attribute_id
-        WHERE pa.product_id = ?
-    ");
+            SELECT a.id, a.name, a.type
+            FROM attributes a
+            JOIN product_attributes pa ON a.id = pa.attribute_id
+            WHERE pa.product_id = ?
+        ");
 
         $stmt->execute([$productId]);
 
