@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Products from "./pages/Products";
@@ -9,6 +9,15 @@ function App() {
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
   const [category, setCategory] = useState("all");
+
+  useEffect(() => {
+    const data = window.localStorage.getItem("cart_persistence");
+    setCart(JSON.parse(data));
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("cart_persistence", JSON.stringify(cart));
+  }, [cart]);
 
   const getCartKey = (id, selected) => {
     return (

@@ -55,17 +55,29 @@ class OrderRepository
             foreach ($input as $item) {
 
                 $stmt = $this->pdo->prepare("
-                INSERT INTO order_items 
-                (order_id, product_id, product_name, quantity, unit_price, attributes)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
+                    INSERT INTO order_items 
+                    (order_id, product_id, product_name, quantity, unit_price, attributes)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ");
+
+                $nameStmt = $this->pdo->prepare("
+                    SELECT p.name, p.id, pr.amount
+                    FROM products p
+                    JOIN prices pr
+                    ON p.id = pr.product_id
+                    WHERE p.id = ?
+                ");
+
+                $nameStmt->execute([$item['productId']]);
+
+                $product = $nameStmt->fetch();
 
                 $stmt->execute([
                     $orderId,
                     $item['productId'],
-                    $item['name'],
+                    $product['name'],
                     $item['quantity'],
-                    $item['amount'],
+                    $product['amount'],
                     $item['attributes'],
                 ]);
             }

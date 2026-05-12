@@ -81,7 +81,7 @@ function Product({ addToCart }) {
           <img
             key={i}
             src={img}
-            className="pdp__thumb"
+            className={`pdp__thumb ${i === imageIndex ? "active" : ""}`}
             onClick={() => setImageIndex(i)}
           />
         ))}
