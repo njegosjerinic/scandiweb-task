@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repository;
+use PDO;
 
 class OrderRepository
 {
@@ -18,33 +19,66 @@ class OrderRepository
             $this->pdo->beginTransaction();
 
             $stmt = $this->pdo->prepare("
-            INSERT INTO orders (total_amount, currency_label, currency_symbol)
-            VALUES (?, ?, ?)
-        ");
+                SELECT p.amount, p.currency_id, c.label, c.symbol
+                FROM prices p
+                JOIN currencies c
+                 ON p.currency_id = c.id
+                WHERE product_id = ?
+            ");
+
+            $total = 0;
+
+            foreach ($input as $item) {
+
+                $stmt->execute([$item['productId']]);
+
+                $product = $stmt->fetch();
+
+                $total += $product['amount'] * $item['quantity'];
+
+
+            }
+
+            $stmt = $this->pdo->prepare("
+                INSERT INTO orders (total_amount, currency_label, currency_symbol)
+                VALUES (?, ?, ?)
+            ");
 
             $stmt->execute([
-                $input['totalAmount'],
-                $input['currencyLabel'],
-                $input['currencySymbol']
+                $total,
+                $product['label'],
+                $product['symbol']
             ]);
 
             $orderId = $this->pdo->lastInsertId();
 
-            foreach ($input['items'] as $item) {
+            foreach ($input as $item) {
 
                 $stmt = $this->pdo->prepare("
-                INSERT INTO order_items 
-                (order_id, product_id, product_name, quantity, unit_price, attributes)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
+                    INSERT INTO order_items 
+                    (order_id, product_id, product_name, quantity, unit_price, attributes)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ");
+
+                $nameStmt = $this->pdo->prepare("
+                    SELECT p.name, p.id, pr.amount
+                    FROM products p
+                    JOIN prices pr
+                    ON p.id = pr.product_id
+                    WHERE p.id = ?
+                ");
+
+                $nameStmt->execute([$item['productId']]);
+
+                $product = $nameStmt->fetch();
 
                 $stmt->execute([
                     $orderId,
                     $item['productId'],
-                    $item['name'],
+                    $product['name'],
                     $item['quantity'],
-                    $item['price'],
-                    json_encode($item['attributes'])
+                    $product['amount'],
+                    $item['attributes'],
                 ]);
             }
 
@@ -54,7 +88,12 @@ class OrderRepository
 
         } catch (\Exception $e) {
             $this->pdo->rollBack();
-            die($e->getMessage()); // 🔥 ovo će ti reći tačno šta puca
+
+            echo '<pre>';
+            print_r($e->getMessage());
+            echo '</pre>';
+
+            die();
         }
     }
 }

@@ -300,6 +300,8 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  height: 500px;
+  overflow-y: scroll;
 }
 
 .pdp__thumb {
@@ -309,15 +311,20 @@ h2 {
   cursor: pointer;
 }
 
+.pdp__thumb.active {
+  border: 2px solid #5ece7b;
+}
+
 .pdp__image {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 500px;
 }
 
 .pdp__image img {
-  max-height: 511px;
+  height: 100%;
   width: 100%;
   object-fit: contain;
 }
@@ -365,7 +372,7 @@ h2 {
 }
 
 .pdp__attr-btn {
-  min-width: 63px;
+  min-width: 40px;
   height: 45px;
   border: 1px solid #1d1f22;
   background: white;

@@ -29,24 +29,27 @@ function Cart({ cart, setCart }) {
   const currency = cart[0]?.prices[0]?.currency.symbol || "$";
 
   const placeOrder = async () => {
-    await fetch("/api/index.php", {
+    const API_URL =
+      window.location.hostname === "localhost"
+        ? "http://localhost:8000/graphql"
+        : "/api/index.php";
+
+    await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         query: `
-        mutation ($input: String!) {
-          placeOrder(input: $input)
+        mutation ($items: [OrderItemInput!]!) {
+          placeOrder(items: $items)
         }
       `,
         variables: {
-          input: JSON.stringify({
-            items: cart,
-            totalAmount: total,
-            currencyLabel: "USD",
-            currencySymbol: "$",
-          }),
+          items: cart.map((item) => ({
+            productId: item.id,
+            quantity: item.quantity,
+          })),
         },
       }),
     });

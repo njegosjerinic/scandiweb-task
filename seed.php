@@ -117,7 +117,6 @@ foreach ($data['data']['products'] as $product) {
 
         foreach ($attribute['items'] as $item) {
 
-            // insert item (global)
             $itemStmt = $pdo->prepare("
         INSERT IGNORE INTO attribute_items (attribute_id, display_value, value, item_id)
         VALUES (?, ?, ?, ?)
@@ -130,7 +129,6 @@ foreach ($data['data']['products'] as $product) {
                 $item['id']
             ]);
 
-            // 🔥 KLJUČNO: veza product ↔ item
             $linkItemStmt = $pdo->prepare("
         INSERT IGNORE INTO product_attribute_items (product_id, attribute_item_id)
         VALUES (?, ?)
