@@ -12,7 +12,10 @@ function App() {
 
   useEffect(() => {
     const data = window.localStorage.getItem("cart_persistence");
-    setCart(JSON.parse(data));
+
+    if (data) {
+      setCart(JSON.parse(data));
+    }
   }, []);
 
   useEffect(() => {
