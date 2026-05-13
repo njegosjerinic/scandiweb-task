@@ -89,11 +89,9 @@ class OrderRepository
         } catch (\Exception $e) {
             $this->pdo->rollBack();
 
-            echo '<pre>';
-            print_r($e->getMessage());
-            echo '</pre>';
+            error_log($e->getMessage());
 
-            die();
+            throw new \Exception('Failed to create order');
         }
     }
 }
