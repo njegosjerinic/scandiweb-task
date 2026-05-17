@@ -27,7 +27,7 @@ function Header({
   useEffect(() => {
     const API_URL =
       window.location.hostname === "localhost"
-        ? "http://localhost:8000/graphql"
+        ? "http://localhost:8000/api/index.php"
         : "/api/index.php";
 
     fetch(API_URL, {

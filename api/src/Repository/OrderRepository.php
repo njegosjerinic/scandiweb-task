@@ -78,7 +78,7 @@ class OrderRepository
                     $product['name'],
                     $item['quantity'],
                     $product['amount'],
-                    $item['attributes'],
+                    json_encode($item['attributes'] ?? []),
                 ]);
             }
 

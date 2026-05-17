@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 const fetchGraphQL = async (query) => {
   const API_URL =
     window.location.hostname === "localhost"
-      ? "http://localhost:8000/graphql"
+      ? "http://localhost:8000/api/index.php"
       : "/api/index.php";
 
   const res = await fetch(API_URL, {

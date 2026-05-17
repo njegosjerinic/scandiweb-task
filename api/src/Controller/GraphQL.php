@@ -41,6 +41,7 @@ class GraphQL
                 'fields' => [
                     'productId' => Type::nonNull(Type::string()),
                     'quantity' => Type::nonNull(Type::int()),
+                    'attributes' => Type::string(),
                 ]
             ]);
 
