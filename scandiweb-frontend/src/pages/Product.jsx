@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 const fetchGraphQL = async (query) => {
   const API_URL =
     window.location.hostname === "localhost"
-      ? "http://localhost:8000/graphql"
+      ? "http://localhost:8000/api/index.php"
       : "/api/index.php";
 
   const res = await fetch(API_URL, {
@@ -50,7 +50,7 @@ function Product({ addToCart }) {
           }
         }
       }
-    `).then((data) => setProduct(data.product));
+    `).then((data) => setProduct(data?.product));
   }, [id]);
 
   const selectAttr = (attrName, value) => {

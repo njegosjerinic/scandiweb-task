@@ -31,7 +31,7 @@ function Cart({ cart, setCart }) {
   const placeOrder = async () => {
     const API_URL =
       window.location.hostname === "localhost"
-        ? "http://localhost:8000/graphql"
+        ? "http://localhost:8000/api/index.php"
         : "/api/index.php";
 
     await fetch(API_URL, {
@@ -49,6 +49,7 @@ function Cart({ cart, setCart }) {
           items: cart.map((item) => ({
             productId: item.id,
             quantity: item.quantity,
+            attributes: JSON.stringify(item.selected || {}),
           })),
         },
       }),
@@ -80,7 +81,7 @@ function Cart({ cart, setCart }) {
               {item.prices[0].amount.toFixed(2)}
             </p>
 
-            {item.attributes.map((attr) => (
+            {item.attributes?.map((attr) => (
               <div
                 key={attr.name}
                 data-testid={`cart-item-attribute-${attr.name
@@ -91,7 +92,7 @@ function Cart({ cart, setCart }) {
 
                 <div className="attr-row">
                   {attr.items.map((a) => {
-                    const selected = item.selected[attr.name] === a.value;
+                    const selected = item.selected?.[attr.name] === a.value;
 
                     return (
                       <span
@@ -148,7 +149,6 @@ function Cart({ cart, setCart }) {
         className="order-btn"
         onClick={placeOrder}
         disabled={cart.length === 0}
-        style={{ display: "fixed" }}
       >
         PLACE ORDER
       </button>
