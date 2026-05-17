@@ -471,6 +471,17 @@ h2 {
     height: 40px;
   }
 
+  .cart-overlay {
+    top: 67px;
+  }
+
+  .cart {
+    width: 250px;
+    right: 0;
+    top: 47px;
+    max-height: 100vh;
+  }
+
   .logo {
     position: static;
     transform: none;
@@ -525,13 +536,6 @@ h2 {
 
   .arrow {
     padding: 6px 10px;
-  }
-
-  .cart {
-    width: 250px;
-    right: 0;
-    top: 57px;
-    max-height: 100vh;
   }
 
   .product-card {
