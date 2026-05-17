@@ -17,7 +17,7 @@ function Header({
   ];
 
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
-
+  const [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation();
 
   const path = location.pathname.split("/")[1];
@@ -58,7 +58,8 @@ function Header({
 
   return (
     <div className="header container">
-      <div style={{ display: "flex", gap: "30px" }}>
+      {/* Menu for desktop */}
+      <div className="desktop-menu">
         {categories.map((cat) => (
           <Link
             onClick={() => setCategory(cat.name)}
@@ -76,6 +77,33 @@ function Header({
         ))}
       </div>
 
+      {/* Menu for phone */}
+
+      <button
+        className="hamburger-menu"
+        onClick={() => setMobileMenu(!mobileMenu)}
+      >
+        ☰
+      </button>
+      <div className="mobile-menu">
+        {mobileMenu &&
+          categories.map((cat) => (
+            <Link
+              onClick={() => setCategory(cat.name)}
+              key={cat.name}
+              to={`/${cat.name}`}
+              data-testid={
+                currentCategory === cat.name
+                  ? "active-category-link"
+                  : "category-link"
+              }
+              className={`menu-button ${currentCategory === cat.name ? "active" : ""}`}
+            >
+              {cat.name.toUpperCase()}
+            </Link>
+          ))}
+      </div>
+      {/* Logo */}
       <Link to="/" className="logo">
         <svg
           width="32"
