@@ -31,7 +31,13 @@ class GraphQL
 
         try {
 
-            $pdo = new \PDO('mysql:host=localhost;dbname=scandiweb', 'root', 'root');
+            $db = require __DIR__ . '/../../config/database.php';
+
+            $pdo = new \PDO(
+                "mysql:host={$db['host']};dbname={$db['dbname']}",
+                $db['user'],
+                $db['password']
+            );
             $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
             $productType = new ProductType();
